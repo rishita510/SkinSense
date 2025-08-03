@@ -1,23 +1,166 @@
  <!DOCTYPE html>
 <html>
 <head>
-    <title>Upload Image - SkinSense</title>
-    <link rel="stylesheet" href="css/style.css">
+  <title>Upload Image - SkinSense</title>
+  <style>
+    body {
+  background: linear-gradient(110deg, #f8e1ff 0%, #e3ffff 100%);
+  min-height: 100vh;
+  margin: 0;
+  font-family: 'Segoe UI', Arial, sans-serif;
+}
+
+.container {
+  max-width: 410px;
+  margin: 3rem auto;
+  background: #fff;
+  padding: 2.5rem 2rem;
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(80, 14, 124, 0.13), 0 1.5px 4px #d1ccec;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  color: #6531a6;
+  margin-bottom: 1.6rem;
+  letter-spacing: 1px;
+}
+
+.form-control {
+  border: 1.6px solid #bb7ee0;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  transition: border-color 0.2s;
+  font-size: 1rem;
+  background: #faf7fd;
+  margin-bottom: 1.1rem;
+}
+.form-control:focus {
+  border-color: #6549bf;
+  outline: none;
+}
+
+#preview {
+  margin: 0.8rem 0 1.2rem 0;
+  border: 2.5px solid #b781e2;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px #ebe3f7;
+  max-width: 92%;
+  display: block;
+  transition: box-shadow 0.3s;
+}
+
+label {
+  margin-right: 1.1rem;
+  font-size: 1.04rem;
+  color: #59157c;
+  cursor: pointer;
+  user-select: none;
+  padding-left: 2px;
+}
+
+.symptoms-group input[type="checkbox"] {
+  accent-color: #a172d5;
+  transform: scale(1.14);
+  margin-right: 0.3rem;
+}
+
+.btn-warning {
+  background: linear-gradient(90deg, #a172d5 20%, #ffc107 100%);
+  color: #372243;
+  padding: 0.7rem 1.8rem;
+  border: none;
+  font-size: 1.08rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  margin-top: 0.5rem;
+  box-shadow: 0 1.5px 6px #dad7f0;
+  transition: background 0.22s, box-shadow 0.22s;
+}
+.btn-warning:hover {
+  background: linear-gradient(90deg, #9b5dbe 10%, #e7bc4e 100%);
+  box-shadow: 0 3px 15px #bcb0d9;
+}
+
+#selectedSymptoms {
+  display: inline-block;
+  min-width: 16px;
+  color: #371c5b;
+  font-weight: 500;
+  letter-spacing: 0.25px;
+}
+
+@media (max-width: 600px) {
+  .container {
+    max-width: 97vw;
+    padding: 1rem;
+    border-radius: 8px;
+  }
+  #preview {
+    max-width: 100%;
+  }
+  .btn-warning {
+    width: 100%;
+  }
+}
+
+
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Upload Skin Image</h2>
-        <form enctype="multipart/form-data">
-            <input type="file" class="form-control mb-3" accept="image/*">
-            
-            <label>Select Symptoms:</label><br>
-            <input type="checkbox" value="itchy"> Itchy
-            <input type="checkbox" value="painful"> Painful
-            <input type="checkbox" value="red"> Red <br><br>
-            
-            <button class="btn btn-warning">Submit</button>
-        </form>
-    </div>
+  <div class="container">
+    <h2>Upload Skin Image</h2>
+    <form enctype="multipart/form-data">
+      <input type="file" class="form-control mb-3" id="imageInput" accept="image/*"><br>
+      <img id="preview" src="#" style="display:none; max-width:200px; margin-bottom:10px; border:1px solid #ccc; border-radius:5px;"><br>
+      <label>Select Symptoms:</label><br>
+      <div class="symptoms-group" style="margin-bottom:1rem;">
+        <label><input type="checkbox" value="itchy"> Itchy</label>
+        <label><input type="checkbox" value="painful"> Painful</label>
+        <label><input type="checkbox" value="red"> Red</label>
+      </div>
+      <div style="margin-bottom:1rem;">
+        <strong>Selected Symptoms:</strong> <span id="selectedSymptoms">None</span>
+      </div>
+      <button class="btn btn-warning">Submit</button>
+    </form>
+  </div>
+  <script>
+    // Image preview
+    document.getElementById('imageInput').addEventListener('change', function(event){
+      const preview = document.getElementById('preview');
+      const file = event.target.files[0];
+      if (file) {
+        preview.style.display = 'block';
+        preview.src = URL.createObjectURL(file);
+      } else {
+        preview.style.display = 'none';
+        preview.src = '#';
+      }
+    });
+    // Live symptom feedback
+    document.querySelectorAll('.symptoms-group input[type="checkbox"]').forEach(cb => {
+      cb.addEventListener('change', function() {
+        const checked = Array.from(document.querySelectorAll('.symptoms-group input[type="checkbox"]:checked')).map(cb => cb.parentElement.textContent.trim());
+        document.getElementById('selectedSymptoms').textContent = checked.length ? checked.join(', ') : 'None';
+      });
+    });
+    // Validate form
+    document.querySelector('form').addEventListener('submit', function(event){
+      const fileInput = document.getElementById('imageInput');
+      const checkboxes = document.querySelectorAll('.symptoms-group input[type="checkbox"]:checked');
+      if(!fileInput.files.length){
+        alert('Please select an image!');
+        event.preventDefault();
+      } else if(!checkboxes.length){
+        alert('Please select at least one symptom.');
+        event.preventDefault();
+      }
+    });
+  </script>
 </body>
 </html>
-
